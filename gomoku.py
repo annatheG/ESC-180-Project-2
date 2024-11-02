@@ -8,7 +8,8 @@ This is a placeholder that you should remove once you modify the function.
 
 Author(s): Michael Guerzhoy with tests contributed by Siavash Kazemian.  Last modified: Nov. 1, 2023
 """
-# returns ture if board is empty
+# Testing browser commit
+# returns true if board is empty
 def is_empty(board):
     for i in range(len(board)):
         for j in range(len(board[0])):
