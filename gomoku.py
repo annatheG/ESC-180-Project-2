@@ -38,10 +38,50 @@ def is_bounded(board, y_end, x_end, length, d_y, d_x):
     else:
         return "SEMIOPEN"
 
+def in_bounds(y, x):
+    if 0 <= y < 8 and 0 <= x < 8: # Check to see if the coordinates are within the range of the board
+        return True
     
-def detect_row(board, col, y_start, x_start, length, d_y, d_x):
+    return False
 
+def detect_row(board, col, y_start, x_start, length, d_y, d_x):
+    open_seq_count = 0
+    semi_open_seq_count = 0
+
+    for step in range(len(board)): # Iterate through the "row"
         
+        y = y_start + step * d_y
+        x = x_start + step * d_x
+        
+        if in_bounds(y, x) == False: # Check if the initial coordinate is within the board space
+            break
+            
+        current_length = 0
+
+        for i in range(length): # Iterate and check if current position is in board and matches colour
+            y_seq = y + i * d_y
+            x_seq = x + i * d_x
+            if in_bounds(y_seq, x_seq) and board[y_seq][x_seq] == col: 
+                current_length += 1
+            else:
+                break
+        
+        if current_length == length:
+
+            before_y = y - d_y
+            before_x = x - d_x
+            after_y = y + length * d_y
+            after_x = x + length * d_x
+
+            # Check if sequence is open, semi-open, or closed
+
+            is_open_before = in_bounds(before_y, before_x) and board[before_y][before_x] == " "
+            is_open_after = in_bounds(after_y, after_x) and board[after_y][after_x] == " "
+
+            if is_open_after and is_open_before:
+                open_seq_count += 1
+            elif is_open_after or is_open_before:
+                semi_open_seq_count += 1
     
     return open_seq_count, semi_open_seq_count
     
@@ -49,6 +89,7 @@ def detect_rows(board, col, length):
     open_seq_count, semi_open_seq_count = 0, 0
 
     # First iterate through the first column to check horizontal, vertical, and diagonal sequences
+
     for i in range(len(board)):
         for j in range(0, 1):
             for k in range(0, 1):
