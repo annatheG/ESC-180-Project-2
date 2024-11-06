@@ -40,18 +40,7 @@ def is_bounded(board, y_end, x_end, length, d_y, d_x):
 
     
 def detect_row(board, col, y_start, x_start, length, d_y, d_x):
-    open_seq_count = 0
-    semi_open_seq_count = 0
 
-    if board[y_start - d_y][x_start - d_x] == " ":
-        start = "open"
-    
-    if board[y_start + d_y * (length )] == " ":
-        end = "open"
-
-    if start == "open" and end == "open":
-        open_seq_count += 1
-    #elif start != "open" and end == 
         
     
     return open_seq_count, semi_open_seq_count
@@ -59,36 +48,41 @@ def detect_row(board, col, y_start, x_start, length, d_y, d_x):
 def detect_rows(board, col, length):
     open_seq_count, semi_open_seq_count = 0, 0
 
+    # First iterate through the first column to check horizontal, vertical, and diagonal sequences
     for i in range(len(board)):
-        for j in range(len(board)):
-            if board[i][j] != col:
+        for j in range(0, 1):
+            for k in range(0, 1):
+                if j == 0 and k == 0:  # Don't waste time looking when dy and dx == 0
+                    continue
+                elif i != 0 and j == 1 and k == 0:  # Don't double-count vertical sequences from cells below (0,0)
+                    continue
+                else:
+                    # Unpack and add individually
+                    open_seq, semi_open_seq = detect_row(board, col, i, 0, length, j, k)
+                    open_seq_count += open_seq
+                    semi_open_seq_count += semi_open_seq
+
+    # Iterate through first row to gather remaining vertical sequences and remaining diagonal in the direction dy = 1, dx = 1
+    # and to get some of the diagonals in the direction dy = 1, dx = -1
+
+    for i in range(len(board)):
+        for j in range(-1, 0, 1):
+            if i == 0:  # Don't count the vertical sequences of the first column (already counted)
                 continue
             else:
-                if i == 7 and j == 7:
-                    return open_seq_count, semi_open_seq_count
-                elif i == 7:
-                    if board[i + 0][j + 1] == col:
-                        open_count, semi_open_count = detect_row(board, col, i, j, length, 0, 1)
-                        open_seq_count += open_count
-                        semi_open_seq_count += semi_open_count
-                elif j == 7:
-                    if board[i + 1][j + 0] == col:
-                        open_count, semi_open_count = detect_row(board, col, i, j, length, 1, 0)
-                        open_seq_count += open_count
-                        semi_open_seq_count += semi_open_count
-                else:
-                    if board[i + 1][j + 1] == col:
-                        open_count, semi_open_count = detect_row(board, col, i, j, length, 1, 1)
-                        open_seq_count += open_count
-                        semi_open_seq_count += semi_open_count
-                    elif board[i + 1][j + 0] == col:
-                        open_count, semi_open_count = detect_row(board, col, i, j, length, 1, 0)
-                        open_seq_count += open_count
-                        semi_open_seq_count += semi_open_count
-                    elif board[i + 0][j + 1] == col:
-                        open_count, semi_open_count = detect_row(board, col, i, j, length, 0, 1)
-                        open_seq_count += open_count
-                        semi_open_seq_count += semi_open_count
+                open_seq, semi_open_seq = detect_row(board, col, 0, i, length, 1, j)
+                open_seq_count += open_seq
+                semi_open_seq_count += semi_open_seq
+
+    # Iterate through the last column to gather remaining diagonal sequences
+
+    for i in range(len(board)):
+        if i == 0: # Don't double count diagonal at (7, 0) in direction dy = 1, dx = -1
+            continue
+        else:
+            open_seq, semi_open_seq = detect_row(board, col, i, len(board) - 1, length, 1, -1)
+            open_seq_count += open_seq
+            semi_open_seq_count += semi_open_seq
 
     return open_seq_count, semi_open_seq_count
 
