@@ -128,8 +128,22 @@ def detect_rows(board, col, length):
     return open_seq_count, semi_open_seq_count
 
 def search_max(board):
+    results = {}
+    result_max = 0
+    for i in range(len(board)):
+        for j in range(len(board[i])):
+            if board[i][j] == ' ':
+                board[i][j] = 'b'
+                results[i,j] = [score(board)]
+                print(results)
+                board[i][j] = ' '
+    '''
+    for value in results:
+        if value > result_max:
+            result_max = value
+                
     return move_y, move_x
-    
+    '''
 def score(board):
     MAX_SCORE = 100000
     
@@ -195,7 +209,7 @@ def analysis(board):
     for c, full_name in [["b", "Black"], ["w", "White"]]:
         print("%s stones" % (full_name))
         for i in range(2, 6):
-            open, semi_open = detect_rows(board, c, i);
+            open, semi_open = detect_rows(board, c, i)
             print("Open rows of length %d: %d" % (i, open))
             print("Semi-open rows of length %d: %d" % (i, semi_open))
         
@@ -305,7 +319,7 @@ def easy_testset_for_main_functions():
     test_is_bounded()
     test_detect_row()
     test_detect_rows()
-    #test_search_max()
+    test_search_max()
 
 def some_tests():
     board = make_empty_board(8)
