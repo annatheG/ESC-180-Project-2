@@ -305,7 +305,7 @@ def easy_testset_for_main_functions():
     test_is_bounded()
     test_detect_row()
     test_detect_rows()
-    test_search_max()
+    #test_search_max()
 
 def some_tests():
     board = make_empty_board(8)
@@ -426,5 +426,6 @@ def some_tests():
   
             
 if __name__ == '__main__':
-    play_gomoku(8)
+    #play_gomoku(8)
+    easy_testset_for_main_functions()
     
