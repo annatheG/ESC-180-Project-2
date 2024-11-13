@@ -53,8 +53,8 @@ def detect_row(board, col, y_start, x_start, length, d_y, d_x):
         y = y_start + step * d_y
         x = x_start + step * d_x
         
-        if in_bounds(y, x) == False: # Check if the initial coordinate is within the board space
-            break
+        if in_bounds(y, x) == False: # Check if the initial coordinate is within the board space 
+            break # is this supposed to return [0,0]?
             
         current_length = 0
 
