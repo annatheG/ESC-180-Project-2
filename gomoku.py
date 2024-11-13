@@ -130,20 +130,32 @@ def detect_rows(board, col, length):
 def search_max(board):
     results = {}
     result_max = 0
+
+    # search all squares in board
     for i in range(len(board)):
         for j in range(len(board[i])):
             if board[i][j] == ' ':
+                # change to black piece to create a test case
                 board[i][j] = 'b'
+
+                # score the test case
                 results[i,j] = [score(board)]
-                print(results)
+                # print(results)
+
+                # revert test case back to actual board
                 board[i][j] = ' '
-    '''
-    for value in results:
-        if value > result_max:
-            result_max = value
-                
-    return move_y, move_x
-    '''
+    
+    # find the max score
+    for key in results.keys():
+        if results[key][0] > result_max:
+            result_max = results[key][0]
+    # print(result_max)
+
+    # return the first max score coordinates
+    for key in results.keys():
+        if results[key][0] == result_max:
+            return key
+    
 def score(board):
     MAX_SCORE = 100000
     
@@ -174,7 +186,15 @@ def score(board):
 
     
 def is_win(board):
-    pass
+    # checks if any empty spaces remain on the board
+    for i in range(len(board)):
+        for j in range(len(board[i])):
+            if board[i][j] == ' ':
+                pass
+    else:
+        return "Draw"
+
+    # checks if a colour won
 
 
 def print_board(board):
