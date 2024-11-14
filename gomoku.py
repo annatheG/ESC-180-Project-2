@@ -48,82 +48,74 @@ def detect_row(board, col, y_start, x_start, length, d_y, d_x):
     open_seq_count = 0
     semi_open_seq_count = 0
 
-    for step in range(len(board)): # Iterate through the "row"
-        
-        y = y_start + step * d_y
-        x = x_start + step * d_x
-        
-        if in_bounds(y, x) == False: # Check if the initial coordinate is within the board space 
-            break # is this supposed to return [0,0]?
-            
-        current_length = 0
+    y = y_start
+    x = x_start
 
-        for i in range(length): # Iterate and check if current position is in board and matches colour
-            y_seq = y + i * d_y
-            x_seq = x + i * d_x
-            if in_bounds(y_seq, x_seq) and board[y_seq][x_seq] == col: 
+    while in_bounds(y, x) and in_bounds(y + (length - 1) * d_y, x + (length - 1) * d_x):
+        current_length = 0
+        for i in range(length):
+            if board[y + i * d_y][x + i * d_x] == col:
                 current_length += 1
             else:
                 break
-        
-        if current_length == length:
 
+        if current_length == length:
+            # Check for openness on both ends
             before_y = y - d_y
             before_x = x - d_x
             after_y = y + length * d_y
             after_x = x + length * d_x
 
-            # Check if sequence is open, semi-open, or closed
-
             is_open_before = in_bounds(before_y, before_x) and board[before_y][before_x] == " "
             is_open_after = in_bounds(after_y, after_x) and board[after_y][after_x] == " "
 
-            if is_open_after and is_open_before:
+            if is_open_before and is_open_after:
                 open_seq_count += 1
-            elif is_open_after or is_open_before:
+            elif is_open_before or is_open_after:
                 semi_open_seq_count += 1
-    
+
+        y += d_y
+        x += d_x
+
     return open_seq_count, semi_open_seq_count
     
 def detect_rows(board, col, length):
     open_seq_count, semi_open_seq_count = 0, 0
+    board_height = len(board)
+    board_width = len(board[0])
 
-    # First iterate through the first column to check horizontal, vertical, and diagonal sequences
+    # Check vertical sequences from the top edge
+    for x in range(board_width):
+        open_seq, semi_open_seq = detect_row(board, col, 0, x, length, 1, 0)  # From top edge vertically down
+        open_seq_count += open_seq
+        semi_open_seq_count += semi_open_seq
 
-    for i in range(len(board)):
-        for j in range(0, 1):
-            for k in range(0, 1):
-                if j == 0 and k == 0:  # Don't waste time looking when dy and dx == 0
-                    continue
-                elif i != 0 and j == 1 and k == 0:  # Don't double-count vertical sequences from cells below (0,0)
-                    continue
-                else:
-                    # Unpack and add individually
-                    open_seq, semi_open_seq = detect_row(board, col, i, 0, length, j, k)
-                    open_seq_count += open_seq
-                    semi_open_seq_count += semi_open_seq
+    # Check horizontal sequences from the left edge
+    for y in range(board_height):
+        open_seq, semi_open_seq = detect_row(board, col, y, 0, length, 0, 1)  # From left edge horizontally right
+        open_seq_count += open_seq
+        semi_open_seq_count += semi_open_seq
 
-    # Iterate through first row to gather remaining vertical sequences and remaining diagonal in the direction dy = 1, dx = 1
-    # and to get some of the diagonals in the direction dy = 1, dx = -1
+    # Check diagonals:
+    # Down-right diagonals starting from the top edge and left edge
+    for x in range(board_width):
+        open_seq, semi_open_seq = detect_row(board, col, 0, x, length, 1, 1)  # Down-right diagonal from top edge
+        open_seq_count += open_seq
+        semi_open_seq_count += semi_open_seq
+    for y in range(1, board_height):  # Skip (0,0) to avoid double-counting
+        open_seq, semi_open_seq = detect_row(board, col, y, 0, length, 1, 1)  # Down-right diagonal from left edge
+        open_seq_count += open_seq
+        semi_open_seq_count += semi_open_seq
 
-    for i in range(len(board)):
-        for j in range(-1, 0, 1):
-            if i == 0:  # Don't count the vertical sequences of the first column (already counted)
-                continue
-            else:
-                open_seq, semi_open_seq = detect_row(board, col, 0, i, length, 1, j)
-                open_seq_count += open_seq
-                semi_open_seq_count += semi_open_seq
-
-    # Iterate through the last column to gather remaining diagonal sequences
-
-    for i in range(len(board)):
-        if i == 0: # Don't double count diagonal at (7, 0) in direction dy = 1, dx = -1
-            continue
-        else:
-            open_seq, semi_open_seq = detect_row(board, col, i, len(board) - 1, length, 1, -1)
-            open_seq_count += open_seq
-            semi_open_seq_count += semi_open_seq
+    # Down-left diagonals starting from the top edge and right edge
+    for x in range(board_width):
+        open_seq, semi_open_seq = detect_row(board, col, 0, x, length, 1, -1)  # Down-left diagonal from top edge
+        open_seq_count += open_seq
+        semi_open_seq_count += semi_open_seq
+    for y in range(1, board_height):  # Skip (0, board_width - 1) to avoid double-counting
+        open_seq, semi_open_seq = detect_row(board, col, y, board_width - 1, length, 1, -1)  # Down-left diagonal from right edge
+        open_seq_count += open_seq
+        semi_open_seq_count += semi_open_seq
 
     return open_seq_count, semi_open_seq_count
 
