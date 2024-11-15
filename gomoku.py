@@ -186,14 +186,23 @@ def is_win(board):
     else:
         return "Draw"
 
-    # check if 5 in a row exist
-    for i in range(len(board)):
-        for j in range(len(board[i])):
-            count = 0 
-            if board[i][j] == "b" or board[i][j] == "w":
-                
+    # check if 5 in a row exist (note: doesn't check closed case wins)
+    open_b = {}
+    semi_open_b = {}
+    open_w = {}
+    semi_open_w = {}
 
-    # checks if a colour won
+    open_b[5], semi_open_b[5] = detect_rows(board, "b", 5)
+    open_w[5], semi_open_w[5] = detect_rows(board, "w", 5)
+        
+    
+    if open_b[5] >= 1 or semi_open_b[5] >= 1:
+        return "Black won"
+    
+    elif open_w[5] >= 1 or semi_open_w[5] >= 1:
+        return "White won"
+            
+    return "Continue playing"
 
 
 def print_board(board):
