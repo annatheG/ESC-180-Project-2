@@ -186,6 +186,13 @@ def is_win(board):
     else:
         return "Draw"
 
+    # check if 5 in a row exist
+    for i in range(len(board)):
+        for j in range(len(board[i])):
+            count = 0 
+            if board[i][j] == "b" or board[i][j] == "w":
+                
+
     # checks if a colour won
 
 
