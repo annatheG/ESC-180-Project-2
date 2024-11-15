@@ -178,14 +178,6 @@ def score(board):
 
     
 def is_win(board):
-    # checks if any empty spaces remain on the board
-    for i in range(len(board)):
-        for j in range(len(board[i])):
-            if board[i][j] == ' ':
-                pass
-    else:
-        return "Draw"
-
     # check if 5 in a row exist (note: doesn't check closed case wins)
     open_b = {}
     semi_open_b = {}
@@ -201,8 +193,17 @@ def is_win(board):
     
     elif open_w[5] >= 1 or semi_open_w[5] >= 1:
         return "White won"
-            
-    return "Continue playing"
+
+# checks if any empty spaces remain on the board
+    for i in range(len(board)):
+        for j in range(len(board[i])):
+            if board[i][j] == ' ':
+                return "Continue playing"
+    else:
+        return "Draw"
+
+    
+
 
 
 def print_board(board):
