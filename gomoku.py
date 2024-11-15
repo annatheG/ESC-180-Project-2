@@ -135,7 +135,7 @@ def search_max(board):
     for i in range(len(board)):
         for j in range(len(board[i])):
             if board[i][j] == ' ':
-                # change to black piece to create a test case
+                # change empty square to black piece to create a test case
                 board[i][j] = 'b'
 
                 # score the test case
