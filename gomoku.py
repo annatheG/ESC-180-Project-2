@@ -21,13 +21,19 @@ def is_empty(board):
 def is_bounded(board, y_end, x_end, length, d_y, d_x):
     start = "" # "open" if a stone can be placed at the start of the sequence
     end = "" # "open" if a stone can be placed at the end of the sequence
-    if board[y_end + d_y][x_end + d_x] == " " and in_bounds(y_end + d_y, x_end + d_x) == True:
-        end = "open"
+    if in_bounds(y_end + d_y, x_end + d_x) == True:
+        if board[y_end + d_y][x_end + d_x] == " ":
+            end = "open"
+        else:
+            end = "closed"
     else:
         end = "closed"
     
-    if board[y_end + d_y * -length][x_end + d_x * -length] == " " and in_bounds(y_end + d_y * -length, x_end + d_x * -length) == True: 
-        start = "open"
+    if in_bounds(y_end + d_y * -length, x_end + d_x * -length) == True:
+        if board[y_end + d_y * -length][x_end + d_x * -length] == " ": 
+            start = "open"
+        else:
+            start = "closed"
     else:
         start = "closed"
 
