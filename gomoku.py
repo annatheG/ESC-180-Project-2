@@ -69,13 +69,13 @@ def detect_row(board, col, y_start, x_start, length, d_y, d_x):
             is_open_before = in_bounds(before_y, before_x) and board[before_y][before_x] == " "
             is_open_after = in_bounds(after_y, after_x) and board[after_y][after_x] == " "
 
-            if is_open_before and is_open_after:
+            if (in_bounds(before_y, before_x) and is_open_before) and (in_bounds(after_y, after_x) and is_open_after):
                 open_seq_count += 1
             elif (in_bounds(before_y, before_x) and is_open_before) or (in_bounds(after_y, after_x) and is_open_after):
                 semi_open_seq_count += 1
 
-        y += d_y
-        x += d_x
+    y += d_y
+    x += d_x
 
     return open_seq_count, semi_open_seq_count
     
