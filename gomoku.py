@@ -26,7 +26,7 @@ def is_bounded(board, y_end, x_end, length, d_y, d_x):
     else:
         end = "closed"
     
-    if board[y_end + d_y * -length][x_end + d_x * -length] == " ": 
+    if board[y_end + d_y * -length][x_end + d_x * -length] == " " and in_bounds == True: 
         start = "open"
     else:
         start = "closed"
