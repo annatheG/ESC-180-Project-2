@@ -58,6 +58,7 @@ def detect_row(board, col, y_start, x_start, length, d_y, d_x):
     x = x_start
 
     while in_bounds(y, x) and in_bounds(y + (length - 1) * d_y, x + (length - 1) * d_x):
+        # Check for a sequence of length `length` starting at (y, x)
         current_length = 0
         for i in range(length):
             if board[y + i * d_y][x + i * d_x] == col:
@@ -76,7 +77,8 @@ def detect_row(board, col, y_start, x_start, length, d_y, d_x):
             if is_open_before and is_open_after:
                 open_seq_count += 1
             elif is_open_before or is_open_after:
-                semi_open_seq_count += 1
+                if in_bounds(after_y, after_x) and board[after_y][after_x] != col:
+                    semi_open_seq_count += 1
 
         # Move to the next cell along the direction
         y += d_y
