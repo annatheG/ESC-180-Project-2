@@ -79,6 +79,8 @@ def detect_row(board, col, y_start, x_start, length, d_y, d_x):
             elif is_open_before or is_open_after:
                 if in_bounds(after_y, after_x) and board[after_y][after_x] != col:
                     semi_open_seq_count += 1
+                elif in_bounds(before_y, before_x) and board[before_y][before_x] != col:
+                    semi_open_seq_count += 1
 
         # Move to the next cell along the direction
         y += d_y
