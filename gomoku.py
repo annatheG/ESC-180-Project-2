@@ -74,8 +74,9 @@ def detect_row(board, col, y_start, x_start, length, d_y, d_x):
             elif (in_bounds(before_y, before_x) and is_open_before) or (in_bounds(after_y, after_x) and is_open_after):
                 semi_open_seq_count += 1
 
-    y += d_y
-    x += d_x
+        # Move to the next starting point along the line
+        y += d_y
+        x += d_x
 
     return open_seq_count, semi_open_seq_count
     
