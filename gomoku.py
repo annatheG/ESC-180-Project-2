@@ -58,6 +58,7 @@ def detect_row(board, col, y_start, x_start, length, d_y, d_x):
     x = x_start
 
     while in_bounds(y, x) and in_bounds(y + (length - 1) * d_y, x + (length - 1) * d_x):
+        # Check for a sequence of length `length` starting at (y, x)
         current_length = 0
         for i in range(length):
             if board[y + i * d_y][x + i * d_x] == col:
@@ -66,26 +67,24 @@ def detect_row(board, col, y_start, x_start, length, d_y, d_x):
                 break
 
         if current_length == length:
-            # Check for openness on both ends
-            before_y = y - d_y
-            before_x = x - d_x
-            after_y = y + length * d_y
-            after_x = x + length * d_x
+            # Check openness at both ends
+            before_y, before_x = y - d_y, x - d_x
+            after_y, after_x = y + length * d_y, x + length * d_x
 
             is_open_before = in_bounds(before_y, before_x) and board[before_y][before_x] == " "
             is_open_after = in_bounds(after_y, after_x) and board[after_y][after_x] == " "
 
-            if (in_bounds(before_y, before_x) and is_open_before) and (in_bounds(after_y, after_x) and is_open_after):
+            if is_open_before and is_open_after:
                 open_seq_count += 1
-            elif (in_bounds(before_y, before_x) and is_open_before) or (in_bounds(after_y, after_x) and is_open_after):
+            elif is_open_before or is_open_after:
                 semi_open_seq_count += 1
 
-        # Move to the next starting point along the line
+        # Move to the next cell along the direction
         y += d_y
         x += d_x
 
     return open_seq_count, semi_open_seq_count
-    
+
 def detect_rows(board, col, length):
     open_seq_count, semi_open_seq_count = 0, 0
     board_height = len(board)
