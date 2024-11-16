@@ -52,7 +52,6 @@ def detect_row(board, col, y_start, x_start, length, d_y, d_x):
     x = x_start
 
     while in_bounds(y, x) and in_bounds(y + (length - 1) * d_y, x + (length - 1) * d_x):
-        # Check for a sequence of length `length` starting at (y, x)
         current_length = 0
         for i in range(length):
             if board[y + i * d_y][x + i * d_x] == col:
