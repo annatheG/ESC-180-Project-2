@@ -54,22 +54,20 @@ def detect_row(board, col, y_start, x_start, length, d_y, d_x):
     open_seq_count = 0
     semi_open_seq_count = 0
 
-    y = y_start
-    x = x_start
+    y, x = y_start, x_start
 
-    while in_bounds(y, x) and in_bounds(y + (length - 1) * d_y, x + (length - 1) * d_x):
-        # Check for a sequence of length `length` starting at (y, x)
+    while in_bounds(y, x):
+        # Check if this is the start of a potential sequence
         current_length = 0
-        for i in range(length):
-            if board[y + i * d_y][x + i * d_x] == col:
-                current_length += 1
-            else:
-                break
+        while in_bounds(y, x) and board[y][x] == col:
+            current_length += 1
+            y += d_y
+            x += d_x
 
         if current_length == length:
-            # Check openness at both ends
-            before_y, before_x = y - d_y, x - d_x
-            after_y, after_x = y + length * d_y, x + length * d_x
+            # Check boundaries around the sequence
+            before_y, before_x = y - (length + 1) * d_y, x - (length + 1) * d_x
+            after_y, after_x = y, x
 
             is_open_before = in_bounds(before_y, before_x) and board[before_y][before_x] == " "
             is_open_after = in_bounds(after_y, after_x) and board[after_y][after_x] == " "
@@ -77,14 +75,12 @@ def detect_row(board, col, y_start, x_start, length, d_y, d_x):
             if is_open_before and is_open_after:
                 open_seq_count += 1
             elif is_open_before or is_open_after:
-                if in_bounds(after_y, after_x) and board[after_y][after_x] != col:
-                    semi_open_seq_count += 1
-                elif in_bounds(before_y, before_x) and board[before_y][before_x] != col:
-                    semi_open_seq_count += 1
+                semi_open_seq_count += 1
 
-        # Move to the next cell along the direction
-        y += d_y
-        x += d_x
+        # Skip past any non-matching cells
+        while in_bounds(y, x) and board[y][x] != col:
+            y += d_y
+            x += d_x
 
     return open_seq_count, semi_open_seq_count
 
@@ -168,7 +164,6 @@ def score(board):
     for i in range(2, 6):
         open_b[i], semi_open_b[i] = detect_rows(board, "b", i)
         open_w[i], semi_open_w[i] = detect_rows(board, "w", i)
-        
     
     if open_b[5] >= 1 or semi_open_b[5] >= 1:
         return MAX_SCORE
@@ -184,36 +179,93 @@ def score(board):
             50   * open_b[3]                     + 
             10   * semi_open_b[3]                +  
             open_b[2] + semi_open_b[2] - open_w[2] - semi_open_w[2])
-
     
 def is_win(board):
-    # check if 5 in a row exist (note: doesn't check closed case wins)
-    open_b = {}
-    semi_open_b = {}
-    open_w = {}
-    semi_open_w = {}
-
-    open_b[5], semi_open_b[5] = detect_rows(board, "b", 5)
-    open_w[5], semi_open_w[5] = detect_rows(board, "w", 5)
-        
+    # Check if 5 in a row exists (including closed case wins)
     
-    if open_b[5] >= 1 or semi_open_b[5] >= 1:
-        return "Black won"
+    # Detect open and semi-open sequences for black and white
+    open_b, semi_open_b = detect_rows(board, "b", 5)
+    open_w, semi_open_w = detect_rows(board, "w", 5)
+
+    # Check for closed sequences for both black and white (both ends blocked)
+    closed_b = count_closed_sequences(board, "b", 5)
+    closed_w = count_closed_sequences(board, "w", 5)
+
+
+    # If black has any open, semi-open, or closed sequences, they win
+    if open_b > 0 or semi_open_b > 0 or closed_b > 0:
+        return "BLACK WON"
+
+    # If white has any open, semi-open, or closed sequences, they win
+    if open_w > 0 or semi_open_w > 0 or closed_w > 0:
+        return "WHITE WON"
+
+    # Check if any empty spaces remain on the board
+    for row in board:
+        if " " in row:  # If any space is empty, continue playing
+            return "CONTINUE PLAYING"
+
+    # If no empty spaces and no one has won, it's a draw
+    return "DRAW"
+
+def count_closed_sequences(board, col, length):
+    closed_seq_count = 0
+    board_height = len(board)
+    board_width = len(board[0])
     
-    elif open_w[5] >= 1 or semi_open_w[5] >= 1:
-        return "White won"
+    # Check all possible sequences
+    for y in range(board_height):
+        for x in range(board_width):
+            for d_y, d_x in [(1, 0), (0, 1), (1, 1), (1, -1)]:  # Directions: down, right, down-right, down-left
+                if in_bounds(y, x) and in_bounds(y + (length - 1) * d_y, x + (length - 1) * d_x):
+                    # Check for closed sequence (all the way through the length)
+                    valid = True
+                    for i in range(length):
+                        if board[y + i * d_y][x + i * d_x] != col:
+                            valid = False
+                            break
+                    
+                    # If it's a valid sequence, check both ends for being closed
+                    if valid:
+                        before_y, before_x = y - d_y, x - d_x
+                        after_y, after_x = y + length * d_y, x + length * d_x
 
-# checks if any empty spaces remain on the board
-    for i in range(len(board)):
-        for j in range(len(board[i])):
-            if board[i][j] == ' ':
-                return "Continue playing"
-    else:
-        return "Draw"
+                        if (in_bounds(before_y, before_x) and board[before_y][before_x] != " ") and \
+                           (in_bounds(after_y, after_x) and board[after_y][after_x] != " "):
+                            closed_seq_count += 1
 
-    
+    return closed_seq_count
 
+def check_closed_in_direction(board, col, y_start, x_start, length, d_y, d_x):
+    count = 0
+    y, x = y_start, x_start
 
+    while in_bounds(y, x) and in_bounds(y + (length - 1) * d_y, x + (length - 1) * d_x):
+        # Check for a sequence of length `length` starting at (y, x)
+        current_length = 0
+        for i in range(length):
+            if board[y + i * d_y][x + i * d_x] == col:
+                current_length += 1
+            else:
+                break
+
+        if current_length == length:
+            # Check if both ends are blocked (not empty)
+            before_y, before_x = y - d_y, x - d_x
+            after_y, after_x = y + length * d_y, x + length * d_x
+
+            # Both ends should not be empty and should not contain the same color
+            is_blocked_before = in_bounds(before_y, before_x) and board[before_y][before_x] != " "
+            is_blocked_after = in_bounds(after_y, after_x) and board[after_y][after_x] != " "
+
+            if is_blocked_before and is_blocked_after:
+                count += 1  # This is a closed sequence
+
+        # Move to the next potential starting point along the direction
+        y += d_y
+        x += d_x
+
+    return count
 
 def print_board(board):
     
@@ -234,15 +286,12 @@ def print_board(board):
     
     print(s)
     
-
 def make_empty_board(sz):
     board = []
     for i in range(sz):
         board.append([" "]*sz)
     return board
                 
-
-
 def analysis(board):
     for c, full_name in [["b", "Black"], ["w", "White"]]:
         print("%s stones" % (full_name))
@@ -251,7 +300,6 @@ def analysis(board):
             print("Open rows of length %d: %d" % (i, open))
             print("Semi-open rows of length %d: %d" % (i, semi_open))
         
-       
 def play_gomoku(board_size):
     board = make_empty_board(board_size)
     board_height = len(board)
@@ -274,9 +322,6 @@ def play_gomoku(board_size):
         if game_res in ["White won", "Black won", "Draw"]:
             return game_res
             
-            
-        
-        
         
         print("Your move:")
         move_y = int(input("y coord: "))
@@ -288,15 +333,12 @@ def play_gomoku(board_size):
         game_res = is_win(board)
         if game_res in ["White won", "Black won", "Draw"]:
             return game_res
-        
-            
             
 def put_seq_on_board(board, y, x, d_y, d_x, length, col):
     for i in range(length):
         board[y][x] = col        
         y += d_y
         x += d_x
-
 
 def test_is_empty():
     board  = make_empty_board(8)
@@ -318,7 +360,6 @@ def test_is_bounded():
         print("TEST CASE for is_bounded PASSED")
     else:
         print("TEST CASE for is_bounded FAILED")
-
 
 def test_detect_row():
     board = make_empty_board(8)
@@ -473,10 +514,7 @@ def some_tests():
     #        Semi-open rows of length 4: 0
     #        Open rows of length 5: 0
     #        Semi-open rows of length 5: 0
-
-
-  
-            
+    
 if __name__ == '__main__':
     #play_gomoku(8)
     easy_testset_for_main_functions()
