@@ -191,7 +191,6 @@ def is_win(board):
     closed_b = count_closed_sequences(board, "b", 5)
     closed_w = count_closed_sequences(board, "w", 5)
 
-
     # If black has any open, semi-open, or closed sequences, they win
     if open_b > 0 or semi_open_b > 0 or closed_b > 0:
         return "BLACK WON"
@@ -230,8 +229,8 @@ def count_closed_sequences(board, col, length):
                         before_y, before_x = y - d_y, x - d_x
                         after_y, after_x = y + length * d_y, x + length * d_x
 
-                        if (in_bounds(before_y, before_x) and board[before_y][before_x] != " ") and \
-                           (in_bounds(after_y, after_x) and board[after_y][after_x] != " "):
+                        if (in_bounds(before_y, before_x) or board[before_y][before_x] != " ") and \
+                           (in_bounds(after_y, after_x) or board[after_y][after_x] != " "):
                             closed_seq_count += 1
 
     return closed_seq_count
