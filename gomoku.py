@@ -137,7 +137,7 @@ def search_max(board):
                 # score the test case
                 results[i,j] = [score(board)]
                 result_max = results[i,j][0]
-                print(results)
+                #print(results)
 
                 # revert test case back to actual board
                 board[i][j] = ' '
@@ -146,7 +146,7 @@ def search_max(board):
     for key in results.keys():
         if results[key][0] > result_max:
             result_max = results[key][0]
-    print(result_max)
+    #print(result_max)
 
     # return the first max score coordinates
     for key in results.keys():
@@ -190,8 +190,8 @@ def is_win(board):
     # Check for closed sequences for both black and white (both ends blocked)
     closed_b = count_closed_sequences(board, "b", 5)
     closed_w = count_closed_sequences(board, "w", 5) 
-    print(closed_b)
-    print(closed_w)
+    #print(closed_b)
+    #print(closed_w)
 
     # If black has any open, semi-open, or closed sequences, they win
     if open_b > 0 or semi_open_b > 0 or closed_b > 0:
