@@ -254,8 +254,8 @@ def check_closed_in_direction(board, col, y_start, x_start, length, d_y, d_x):
             after_y, after_x = y + length * d_y, x + length * d_x
 
             # Both ends should not be empty and should not contain the same color
-            is_blocked_before = in_bounds(before_y, before_x) and board[before_y][before_x] != " "
-            is_blocked_after = in_bounds(after_y, after_x) and board[after_y][after_x] != " "
+            is_blocked_before = in_bounds(before_y, before_x) or board[before_y][before_x] != " "
+            is_blocked_after = in_bounds(after_y, after_x) or board[after_y][after_x] != " "
 
             if is_blocked_before and is_blocked_after:
                 count += 1  # This is a closed sequence
