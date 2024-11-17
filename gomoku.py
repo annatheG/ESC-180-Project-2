@@ -189,7 +189,9 @@ def is_win(board):
 
     # Check for closed sequences for both black and white (both ends blocked)
     closed_b = count_closed_sequences(board, "b", 5)
-    closed_w = count_closed_sequences(board, "w", 5)
+    closed_w = count_closed_sequences(board, "w", 5) 
+    print(closed_b)
+    print(closed_w)
 
     # If black has any open, semi-open, or closed sequences, they win
     if open_b > 0 or semi_open_b > 0 or closed_b > 0:
@@ -233,6 +235,7 @@ def count_closed_sequences(board, col, length):
                            (in_bounds(after_y, after_x) or board[after_y][after_x] != " "):
                             closed_seq_count += 1
 
+    # print(closed_seq_count)
     return closed_seq_count
 
 def check_closed_in_direction(board, col, y_start, x_start, length, d_y, d_x):
@@ -254,8 +257,8 @@ def check_closed_in_direction(board, col, y_start, x_start, length, d_y, d_x):
             after_y, after_x = y + length * d_y, x + length * d_x
 
             # Both ends should not be empty and should not contain the same color
-            is_blocked_before = in_bounds(before_y, before_x) or board[before_y][before_x] != " "
-            is_blocked_after = in_bounds(after_y, after_x) or board[after_y][after_x] != " "
+            is_blocked_before = not in_bounds(before_y, before_x) or board[before_y][before_x] != " "
+            is_blocked_after = not in_bounds(after_y, after_x) or board[after_y][after_x] != " "
 
             if is_blocked_before and is_blocked_after:
                 count += 1  # This is a closed sequence
@@ -515,7 +518,7 @@ def some_tests():
     #        Semi-open rows of length 5: 0
     
 if __name__ == '__main__':
-    #play_gomoku(8)
-    easy_testset_for_main_functions()
-    some_tests()
+    play_gomoku(8)
+    #easy_testset_for_main_functions()
+    #some_tests()
     
