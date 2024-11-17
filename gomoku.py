@@ -126,7 +126,6 @@ def detect_rows(board, col, length):
 
 def search_max(board):
     results = {}
-    result_max = 0
 
     # search all squares in board
     for i in range(len(board)):
@@ -137,7 +136,8 @@ def search_max(board):
 
                 # score the test case
                 results[i,j] = [score(board)]
-                # print(results)
+                result_max = results[i,j][0]
+                print(results)
 
                 # revert test case back to actual board
                 board[i][j] = ' '
@@ -146,7 +146,7 @@ def search_max(board):
     for key in results.keys():
         if results[key][0] > result_max:
             result_max = results[key][0]
-    # print(result_max)
+    print(result_max)
 
     # return the first max score coordinates
     for key in results.keys():
@@ -231,8 +231,8 @@ def count_closed_sequences(board, col, length):
                         before_y, before_x = y - d_y, x - d_x
                         after_y, after_x = y + length * d_y, x + length * d_x
 
-                        if (in_bounds(before_y, before_x) or board[before_y][before_x] != " ") and \
-                           (in_bounds(after_y, after_x) or board[after_y][after_x] != " "):
+                        if (not in_bounds(before_y, before_x) or board[before_y][before_x] != " ") and \
+                           (not in_bounds(after_y, after_x) or board[after_y][after_x] != " "):
                             closed_seq_count += 1
 
     # print(closed_seq_count)
